@@ -17,11 +17,11 @@
 
 ## 示例
 
-## HTTP 使用
+## 1. HTTP 使用
 
   参考[这里](https://github.com/CandyMi/lua-nsq/blob/master/test_api.lua)的示例代码.
 
-## TCP 使用
+## 2. TCP 使用
 
   参考[这里](https://github.com/CandyMi/lua-nsq/blob/master/test_mq.lua)的示例代码.
 
