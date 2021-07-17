@@ -114,7 +114,7 @@ local function cmd_identify(sock, no_heartbeat)
 end
 
 local function cmd_rdy(sock, num)
-  return sock_write(sock, num and fmt("RDY %u\n", toint(num) or 100) or "RDY 100\n")
+  return sock_write(sock, num and fmt("RDY %u\n", toint(num) or 200) or "RDY 200\n")
 end
 
 local function cmd_fin(sock, mid)
@@ -231,6 +231,7 @@ function protocol.subscribe(self, topic, channel, callback)
   local sock = assert(cmd_handshake(opt))
   assert(cmd_subscribe(sock, topic, channel) and cmd_rdy(sock), "[NSQ ERROR]: Can't subscribe any topic or channel.")
   cf_fork(function ()
+    local count = 200
     local key = topic .. '=' .. channel
     self.map[key] = sock
     while true do
@@ -240,8 +241,13 @@ function protocol.subscribe(self, topic, channel, callback)
         -- 消息类型
         local dtype = info.dtype
         if dtype == FRAME_TYPE_MESSAGE then
-          cf_fork(callback, { message = info.message, mid = info.mid })
+          cf_fork(callback, { message = info.message, mid = info.mid, ts = info.ts * 1e-9 })
           cmd_fin(sock, info.mid) -- 主动响应`fin`
+          count = count - 1
+          if count == 50 then
+            count = 200
+            cmd_rdy(sock)
+          end
         elseif dtype == FRAME_TYPE_RESPONSE then
           cmd_nop(sock) -- 收到任何`RESPONSE`类型响应都回应`NOP`.
         else
@@ -254,7 +260,9 @@ function protocol.subscribe(self, topic, channel, callback)
           return
         end
         while true do
-          sock:close()
+          if sock then
+            sock:close()
+          end
           sock = cmd_handshake(opt)
           if sock and cmd_subscribe(sock, topic, channel) and cmd_rdy(sock) then
             break
@@ -264,6 +272,7 @@ function protocol.subscribe(self, topic, channel, callback)
           return sock:close()
         end
         self.map[key] = sock
+        count = 200
       end
     end
   end)
