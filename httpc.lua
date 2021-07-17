@@ -108,7 +108,7 @@ function httpc:channel_delete(headers, topic, channel)
     return false, "[NSQ ERROR]: Invalide response."
   end
   if code == 404 then
-    return false, "[NSQ ERROR]: Can't find this topic."
+    return false, "[NSQ ERROR]: Can't find this channel."
   end
   return true
 end
@@ -122,7 +122,7 @@ function httpc:channel_empty(headers, topic, channel)
     return false, "[NSQ ERROR]: Invalide response."
   end
   if code == 404 then
-    return false, "[NSQ ERROR]: Can't find this topic."
+    return false, "[NSQ ERROR]: Can't find this channel."
   end
   return true
 end
