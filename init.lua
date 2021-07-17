@@ -28,23 +28,23 @@ function nsq:on(topic, channel, callback)
   return protocol_subscribe(self, topic, channel, callback)
 end
 
----comment 发布一条消息
+---comment 发布消息
 ---@param topic     string    @主题名称
 ---@param message   string    @消息内容(必须)
 ---@param dtime     number    @延迟时间(可选)
 function nsq:emit_one(topic, message, dtime)
-  assert(not self.closed, "[NSQ ERROR]: object closed.")
+  assert(not self.closed, "[NSQ ERROR]: already closed.")
   assert(type(topic) == 'string', "[NSQ ERROR]: `channel` must be string type.")
   assert(type(dtime) == 'number', "[NSQ ERROR]: `dtime` must be number type.")
   assert(type(message) == 'string', "[NSQ ERROR]: `message` must be string type.")
   return protocol_dpublish(self, topic, message, dtime)
 end
 
----comment 发布多条消息
+---comment 批量发布消息
 ---@param topic     string    @发布的主题
 ---@param message   string    @发布的消息(`...`表示可以一次发布多个`message`)
 function nsq:emit_all(topic, message, ...)
-  assert(not self.closed, "[NSQ ERROR]: object closed.")
+  assert(not self.closed, "[NSQ ERROR]: already closed.")
   assert(type(topic) == 'string', "[NSQ ERROR]: `channel` must be string type.")
   assert(type(message) == 'string', "[NSQ ERROR]: `message` must be string type.")
   return protocol_mpublish(self, topic, message, ...)
