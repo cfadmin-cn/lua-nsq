@@ -36,8 +36,9 @@ local function sock_read(sock, bytes)
 	end
 	bytes = bytes - #buffer
 	local buffers = {buffer}
+  local sock_recv = sock.recv
 	while 1 do
-		buffer = sock:recv(bytes)
+		buffer = sock_recv(sock, bytes)
 		if not buffer then
 			return
 		end
