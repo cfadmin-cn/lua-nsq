@@ -183,9 +183,13 @@ function protocol.dpublish(self, topic, message, dtime)
   if not self.pool then
     self.pool = {}
   end
-  local sock = tremove(self.pool)
+  local sock, errinfo
+  sock, errinfo = tremove(self.pool)
   if not sock then
-    sock = cmd_handshake(self, true)
+    sock, errinfo = cmd_handshake(self, true)
+    if not sock then
+      return false, errinfo
+    end
   end
   local info = cmd_dpublish(sock, topic, message, toint(dtime) or 0)
   if not info then
@@ -208,9 +212,13 @@ function protocol.mpublish(self, topic, message, ...)
   if not self.pool then
     self.pool = {}
   end
-  local sock = tremove(self.pool)
+  local sock, errinfo
+  sock, errinfo = tremove(self.pool)
   if not sock then
-    sock = cmd_handshake(self, true)
+    sock, errinfo = cmd_handshake(self, true)
+    if not sock then
+      return false, errinfo
+    end
   end
   local info = cmd_mpublish(sock, topic, message, ...)
   if not info then
