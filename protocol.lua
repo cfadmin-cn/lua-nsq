@@ -153,11 +153,12 @@ local function cmd_handshake(self, no_heartbeat)
   -- 连接服务器
   local sock = sock_connect(self)
   if not sock then
-    return
+    return false, "[NSQ ERROR]: Can't Connect to nsq server 1."
   end
   -- 发送魔发字符
   if not cmd_magic(sock) or not cmd_identify(sock, no_heartbeat) then
-    return sock:close()
+    sock:close()
+    return false, "[NSQ ERROR]: Can't Connect to nsq server 2."
   end
   -- 解析响应
   local opt, errinfo = read_response(sock)
@@ -168,6 +169,7 @@ local function cmd_handshake(self, no_heartbeat)
   -- 验证
   opt = json_decode(opt.message) or {}
   if opt.auth_required then
+    sock:close()
     return false, "[NSQ ERROR]: Can't auth this session."
   end
   self.opt = opt
@@ -228,8 +230,7 @@ end
 
 -- 订阅消息
 function protocol.subscribe(self, topic, channel, callback)
-  local opt = { domain = self.domain, port = self.port }
-  local sock = assert(cmd_handshake(opt))
+  local sock = assert(cmd_handshake(self))
   assert(cmd_subscribe(sock, topic, channel) and cmd_rdy(sock), "[NSQ ERROR]: Can't subscribe any topic or channel.")
   cf_fork(function ()
     local count = 200
@@ -264,7 +265,7 @@ function protocol.subscribe(self, topic, channel, callback)
           if sock then
             sock:close()
           end
-          sock = cmd_handshake(opt)
+          sock = cmd_handshake(self)
           if sock and cmd_subscribe(sock, topic, channel) and cmd_rdy(sock) then
             break
           end
