@@ -1,7 +1,7 @@
 require "utils"
 local nsq = require "lua-nsq"
 
-local mq = nsq:new{ domian = "localhost", port = 4150 }
+local mq = nsq:new{ domain = "localhost", port = 4150 }
 
 mq:on("admin", "user", function (info)
   var_dump(info)
@@ -17,6 +17,6 @@ require "cf".at(1, function ()
 end)
 
 require "cf".timeout(10, function ()
-  -- 发布多条消息
+  -- 关闭连接
   mq:close()
 end)
