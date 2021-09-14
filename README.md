@@ -24,6 +24,10 @@
 ## 2. TCP 使用
 
   参考[这里](https://github.com/CandyMi/lua-nsq/blob/master/test_mq.lua)的示例代码.
+  
+## 3. Docker部署
+  
+  [这里](https://github.com/CandyMi/lua-nsq/blob/master/docker-compose.yml)有[nsqio](https://nsq.io)提供的部署文件. 也可以打开[这里](https://nsq.io/deployment/docker.html)根据文档指引学习如何部署.
 
 ## 注意
 
