@@ -25,9 +25,13 @@
 
   参考[这里](https://github.com/CandyMi/lua-nsq/blob/master/test_mq.lua)的示例代码.
   
-## 3. Docker部署
+## 3. 本地启动
+
+  1. 到[这里](https://github.com/nsqio/nsq/releases/latest)下载二进制包并解压.
   
-  [这里](https://github.com/CandyMi/lua-nsq/blob/master/docker-compose.yml)有[nsqio](https://nsq.io)提供的部署文件. 也可以打开[这里](https://nsq.io/deployment/docker.html)根据文档指引学习如何部署.
+  2. 然后根据自己使用的操作系统将`start.sh`或者`start.cmd`复制到解压后的文件夹内.
+
+  3. 打开`terminal`或`cmd`窗口, 执行上述脚本后即可实现本地快速启动.
 
 ## 注意
 
