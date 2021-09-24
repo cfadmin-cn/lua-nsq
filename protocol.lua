@@ -115,7 +115,7 @@ local function cmd_identify(sock, no_heartbeat)
 end
 
 local function cmd_rdy(sock, num)
-  return sock_write(sock, num and fmt("RDY %u\n", toint(num) or 200) or "RDY 200\n")
+  return sock_write(sock, num and fmt("RDY %u\n", toint(num) or 1000) or "RDY 1000\n")
 end
 
 local function cmd_fin(sock, mid)
@@ -241,7 +241,7 @@ function protocol.subscribe(self, topic, channel, callback)
   local sock = assert(cmd_handshake(self))
   assert(cmd_subscribe(sock, topic, channel) and cmd_rdy(sock), "[NSQ ERROR]: Can't subscribe any topic or channel.")
   cf_fork(function ()
-    local count = 200
+    local count = 1000
     local key = topic .. '=' .. channel
     self.map[key] = sock
     while true do
@@ -255,7 +255,7 @@ function protocol.subscribe(self, topic, channel, callback)
           cmd_fin(sock, info.mid) -- 主动响应`fin`
           count = count - 1
           if count == 50 then
-            count = 200
+            count = 1000
             cmd_rdy(sock)
           end
         elseif dtype == FRAME_TYPE_RESPONSE then
@@ -282,7 +282,7 @@ function protocol.subscribe(self, topic, channel, callback)
           return sock:close()
         end
         self.map[key] = sock
-        count = 200
+        count = 1000
       end
     end
   end)
